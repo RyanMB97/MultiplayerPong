@@ -165,13 +165,14 @@ public class CreateServer extends Canvas implements Runnable, KeyListener { // C
 		try {
 			serverSocket = new ServerSocket(serverPort);
 			socket = serverSocket.accept();
-			out = new DataOutputStream(socket.getOutputStream());
-			in = new DataInputStream(socket.getInputStream());
+			if (out == null || in == null) {
+				out = new DataOutputStream(socket.getOutputStream());
+				in = new DataInputStream(socket.getInputStream());
+			}
 			ConnectedPlayer cp = new ConnectedPlayer(out, in);
 			Thread userThread = new Thread(cp);
 			System.out.println("User has connected");
 			userThread.start();
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -196,11 +197,11 @@ public class CreateServer extends Canvas implements Runnable, KeyListener { // C
 
 	private void tick() {
 		movement(); // Check for any movement
-		
+
 		// Re-bind the collision rectangles to new positions after movement
 		serverRect.setBounds(xPos, yPos, pWidth, pHeight);
 		clientRect.setBounds(cXPos, cYPos, pWidth, pHeight);
-		
+
 		// Move the ball
 		b.tick(this);
 
@@ -231,7 +232,7 @@ public class CreateServer extends Canvas implements Runnable, KeyListener { // C
 		g.fillRect(xPos, yPos, pWidth, pHeight);
 		g.fillRect(cXPos, cYPos, pWidth, pHeight);
 		b.render(g);
-		
+
 		// Draw scores
 		g.drawString("P1 Score: " + serverScore, 40, 10);
 		g.drawString("P2 Score: " + clientScore, getWidth() - 105, 10);
